@@ -1,14 +1,14 @@
-//#![no_main]
+#![no_main]
 use lazy_static::lazy_static;
-// use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::fuzz_target;
 use rvv_encode::encode;
 use std::collections::HashSet;
 use std::str;
 
 #[rustfmt::skip]
-const COMPLETED_RVV_INST_VEC: [&str; 284] = [
-    //"vsetivli",
-    //"vsetvli",
+const COMPLETED_RVV_INST_VEC: [&str; 286] = [
+    "vsetivli",
+    "vsetvli",
     "vsetvl",
     "vlm.v",
     "vsm.v",
@@ -334,7 +334,25 @@ fn check_asm(inst: u32, xlen: u32) {
     }
 
     let inst2 = encode(asm_str, false);
-    let inst2 = inst2.ok().unwrap().unwrap();
+    assert!(inst2.is_ok(), "Encode error: inst: 0x{:x?}, asm: {}", inst, asm_str);
+
+    let inst2 = inst2.ok();
+    assert!(
+        inst2.is_some(),
+        "Encode error: inst: 0x{:x?}, asm: {}, inst2: none",
+        inst,
+        asm_str
+    );
+
+    let inst2 = inst2.unwrap();
+    assert!(
+        inst2.is_some(),
+        "Encode error: inst: 0x{:x?}, asm: {}, inst2: none",
+        inst,
+        asm_str
+    );
+
+    let inst2 = inst2.unwrap();
     assert!(
         inst == inst2,
         "Error: inst: 0x{:x?}, rvv_inst: 0x{:x?}, asm: {}",
@@ -344,11 +362,11 @@ fn check_asm(inst: u32, xlen: u32) {
     );
 }
 
-fn main() {
-    check_asm(0xff0a2457, 0);
-}
+// fn main() {
+//     check_asm(0xff0a2457, 0);
+// }
 
-// fuzz_target!(|data: [u8; 4]| {
-//     let inst = u32::from_le_bytes(data);
-//     check_asm(inst, 0);
-// });
+fuzz_target!(|data: [u8; 4]| {
+    let inst = u32::from_le_bytes(data);
+    check_asm(inst, 0);
+});
