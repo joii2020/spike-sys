@@ -6,9 +6,9 @@ use std::collections::HashSet;
 use std::str;
 
 #[rustfmt::skip]
-const COMPLETED_RVV_INST_VEC: [&str; 286] = [
-    "vsetivli",
-    "vsetvli",
+const COMPLETED_RVV_INST_VEC: [&str; 267] = [
+    //"vsetivli",
+    //"vsetvli",
     "vsetvl",
     "vlm.v",
     "vsm.v",
@@ -224,21 +224,21 @@ const COMPLETED_RVV_INST_VEC: [&str; 286] = [
     "vs2r.v",
     "vs4r.v",
     "vs8r.v",
-    "vmacc.vv",
-    "vmacc.vx",
-    "vnmsac.vv",
-    "vnmsac.vx",
-    "vmadd.vv",
-    "vmadd.vx",
-    "vnmsub.vv",
-    "vnmsub.vx",
-    "vwmaccu.vv",
-    "vwmaccu.vx",
-    "vwmacc.vv",
-    "vwmacc.vx",
-    "vwmaccsu.vv",
-    "vwmaccsu.vx",
-    "vwmaccus.vx",
+    //"vmacc.vv",
+    //"vmacc.vx",
+    //"vnmsac.vv",
+    //"vnmsac.vx",
+    //"vmadd.vv",
+    //"vmadd.vx",
+    //"vnmsub.vv",
+    //"vnmsub.vx",
+    //"vwmaccu.vv",
+    //"vwmaccu.vx",
+    //"vwmacc.vv",
+    //"vwmacc.vx",
+    //"vwmaccsu.vv",
+    //"vwmaccsu.vx",
+    //"vwmaccus.vx",
     "vmerge.vvm",
     "vmerge.vxm",
     "vmerge.vim",
@@ -268,11 +268,11 @@ const COMPLETED_RVV_INST_VEC: [&str; 286] = [
     "vwredsum.vs",
     "vmand.mm",
     "vmnand.mm",
-    "vmandnot.mm",
+    //"vmandnot.mm",
     "vmxor.mm",
     "vmor.mm",
     "vmnor.mm",
-    "vmornot.mm",
+    //"vmornot.mm",
     "vmxnor.mm",
     "vcpop.m",
     "vmsbf.m",
@@ -313,7 +313,7 @@ fn check_asm(inst: u32, xlen: u32) {
         return;
     }
     let asm_str = str::from_utf8(&output[0..output_len as usize]).ok().unwrap();
-    if asm_str == "unknown" {
+    if asm_str.find("unknown").is_some() {
         return;
     }
 
@@ -361,10 +361,6 @@ fn check_asm(inst: u32, xlen: u32) {
         asm_str
     );
 }
-
-// fn main() {
-//     check_asm(0xff0a2457, 0);
-// }
 
 fuzz_target!(|data: [u8; 4]| {
     let inst = u32::from_le_bytes(data);
